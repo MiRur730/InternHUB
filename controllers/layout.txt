@@ -1,0 +1,7 @@
+companySettingModel =blogSetting
+blog =mainpage
+landing page
+startupSetup page
+startupController=blogcontroller
+post=post.ejs
+startupRoute=blog_Route

@@ -1,0 +1,63 @@
+<%- include("../layouts/admin-header.ejs") %>
+
+
+        <!-- Page Content  -->
+        <div class="postaddition">
+        
+          <h2  >Add Post</h2>
+
+
+          <div class="container">
+            <form action="/create-post" method="post">
+             
+                  <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="title"  style=" color: rgb(46, 120, 135); margin:20px;"required placeholder="Enter Post title" class="w-100">
+                    <textarea  class="form-control form-control-lg " style="color: rgb(46, 120, 135); margin:20px" name="content" id="content" cols="30" rows="5" placeholder="Enter Description  " class="w-100" required></textarea>
+                    
+                 <button type="submit" value="Add Post" class="btn " style="background-color:rgb(46, 120, 135); color: white; margin-top: 30px;">Add Post</button>
+                  </div>
+                
+
+              
+           
+
+            </form>
+          </div>
+
+          <% if(typeof message !== "undefined"){
+          %>
+           <p style="color:rgb(11, 52, 129);font-family: 'Poppins',sans-serif;"><%= message %></p>
+          <% } %>
+        </div>
+      
+
+
+        <script>
+  $(document).ready(function(){
+    $('uploadForm').submit(function(event){
+        event.preventDefault();
+
+        $.ajax({
+          url: "/upload-post-image",
+          type:"POST",
+          data: new FormData(this),
+          contentType:false,
+          cache:false,
+          processData:false,
+          success:function(data){
+            if(data.success==true){
+              $("#image").val(data.path);
+              alert(data.msg);
+              $("#uploadModal").modal("hide");
+            }
+            else{
+              alert(data.msg);
+            }
+          }
+        })
+    })
+  }
+  )
+
+        </script>
+<%- include("../layouts/admin-footer.ejs") %>

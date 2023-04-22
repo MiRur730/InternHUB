@@ -1,0 +1,158 @@
+<%- include("./layouts/Showheader.ejs")  %>
+ <!-- Page content-->
+ <div>
+ <div class="card postpage " style="width: 40rem; margin-left:250px ">
+    <style>
+        .postpage:hover {
+          transform: scale(1.03);
+          transition: all 0.3s ease-in-out;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+      </style>
+    <div class="row">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="card-body"><%= post.title %></h1>
+                   
+                    <!-- <div class="text-muted fst-italic mb-2"></div> -->
+                   
+                    
+                </header>
+                <!-- Preview image figure
+                <figure class="mb-4"><img class="img-fluid rounded" src="https://dummyimage.com/900x400/ced4da/6c757d.jpg" alt="..." /></figure> -->
+                <!-- Post content-->
+                <section class="mb-5">
+                    
+                    <p class="card-text"><%= post.content %></p>
+                </section>
+                </div>
+            </article>
+           </div>
+           </div>
+            <!-- Comments section-->
+            <section class="mb-5">
+                <div class="bg-light">
+                    <div class="card" style="width: 40rem; margin-left:250px " >
+                        <h4 class="card-text " style="text-align:center; justify-content: center;">Leave a comment</h4>
+                        <!-- Comment form-->
+                        <form class="card-body" id="comment-form" style="display: flex-column; margin: 20px;">
+                            <input type="hidden" class="card-text" name="post_id" value="<%=post._id %>">
+                            <input type="text" class="card-text" style="margin:10px " name="username" placeholder="Enter your name" required class="form-control mb-3" >
+                           <input type="email" class="card-text" name="email" placeholder="Enter your email" >
+
+                            <textarea class="form-control" class="card-text" rows="3" name="comment" required placeholder="Join the discussion and leave a comment!"></textarea>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        
+                        </form>
+
+                        <p class="com-status" style="color: green; font-size: medium;font-family: Verdana, Geneva, Tahoma, sans-serif;"></p>
+                        
+
+                        <% 
+                        if(post.comments.length > 0){
+                            post.comments = post.comments.reverse();
+                             post.comments.forEach(function(comment){
+                                    %>
+                                    <div class="d-flex mt-3">
+                                        
+                                        <div class="ms-3">
+                                            <div class="fw-bold"><%= comment.username%></div>
+                                            <%= comment.comment%>
+  <!-- adding all rplies here -->
+<% if(comment.replies){
+    comment.replies.forEach(function(reply){
+%>
+<div class="d-flex mt-3 mb-3">
+
+    <div class="ms-3">
+        <div class="fw-bold"><%= reply.name%></div>
+        <%= reply.reply%>
+<%
+    })
+}
+%>
+
+                                            <!-- reply form  under comment-->
+                                            <div class="col-md-12">
+                                                <form class="do-reply">
+                                                    <input type="hidden" name="post_id" value="<%= post._id %>">
+                                                    <input type="hidden" name="comment_id" value="<%=comment._id %>">
+                                                    <input type="hidden" name="comment_email" value="<%=comment.email%>" >
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" name="name" placeholder="Enter Name" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                       <textarea name="reply"  class="form-control" placeholder="RePLY"
+                                                       id="" cols="30" rows="10"></textarea>
+                                                    </div>
+                                                    <button type="submit" value="reply" class="btn btn-info btn-sm">Add Reply</button>
+                                                </form>
+                                            </div>
+
+                                           </div>
+                                           </div>
+
+                      <%  })
+
+                            }
+                      %>
+                       
+
+
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="col-lg-4">
+            
+            
+           
+            </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+        $("#comment-form").submit(function(event){
+            event.preventDefault();
+          var formData= $(this).serialize();
+
+            $.ajax({
+                url: "/post/add-comment",
+                type: "POST",
+                data:formData,
+                success:function(data){
+                    $(".com-status").text(data.msg);
+                    setTimeout(function(){
+                        $(".com-status").text('');
+                    },5000);
+                }
+            });
+        })
+   
+
+    $(".do-reply").submit(function(event){
+
+        
+            event.preventDefault();
+          var formData= $(this).serialize();
+          var obj=$(this)
+            $.ajax({
+                url: "/post/do-reply",
+                type: "POST",
+                data:formData,
+                success:function(data){
+                   $(obj)[0].reset();
+                   $(obj)[0].parent().parent().append("<p>"+ data.msg+"</p>");
+                  
+                   
+                }
+            })
+        })
+    })
+
+
+</script>
+<%- include("./layouts/footer.ejs") %>
